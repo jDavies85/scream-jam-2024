@@ -53,7 +53,7 @@ MonoBehaviour:
     count: 3
   - prefab: {fileID: 3071118446310957221, guid: 8ee86b25bfd7bb348a4bbb453ca95231, type: 3}
     count: 3
-  - prefab: {fileID: 6127622465170601182, guid: 95181e5dd843e814eb22f1168161d869, type: 3}
-    count: 2
   - prefab: {fileID: 1604854385222133709, guid: 19df144089d06754dbac8a7645af94c5, type: 3}
     count: 4
+  entrancesAndExits: {fileID: 6127622465170601182, guid: 95181e5dd843e814eb22f1168161d869, type: 3}
+  generateRandomMap: 1

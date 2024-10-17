@@ -1,11 +1,12 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class MapGenerator : MonoBehaviour
 {
     public DungeonTile[] tiles = new DungeonTile[6];
+    public GameObject entrancesAndExits;
     public bool generateRandomMap;
     private List<GameObject> deck = new List<GameObject>();
 
@@ -13,29 +14,52 @@ public class MapGenerator : MonoBehaviour
     {
         if(generateRandomMap)
         {
-            for (int i = 0; i < 6; i++)
-            {
-                for (int j = 0; j < tiles[i].count; j++)
-                {
-                    deck.Add(Instantiate(tiles[i].prefab));
-                }
-            }
-            deck.Shuffle();
+            GenerateDeck();
+            var roomCount = 0;
             var coords = new Vector3();
-            int rowCount = 4;
-            for (int i = 0; i < deck.Count; i++)
+            foreach (var item in deck)
             {
-                deck[i].transform.position = coords;
-                coords.x += 3;
-                rowCount--;
-                if(rowCount == 0)
+                var room = item.GetComponent<Room>();
+                if(roomCount > 0)
                 {
-                    coords.x = 0;
-                    coords.z += 3;
-                    rowCount = 4;
+                    //get valid spawn point
+                    //rotate next room until it fits AND when placed all spawns are valid
+                    //place room
                 }
+                item.transform.position = coords;
+            }
+            //var coords = new Vector3();
+            //int rowCount = 4;
+            //for (int i = 0; i < deck.Count; i++)
+            //{
+            //    deck[i].transform.position = coords;
+            //    coords.x += 3;
+            //    rowCount--;
+            //    if(rowCount == 0)
+            //    {
+            //        coords.x = 0;
+            //        coords.z += 3;
+            //        rowCount = 4;
+            //    }
+            //}
+        }
+    }
+
+    void GenerateDeck() 
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            for (int j = 0; j < tiles[i].count; j++)
+            {
+                deck.Add(Instantiate(tiles[i].prefab));
             }
         }
+        deck.Shuffle();
+        var tmpList = deck.ToList();
+        deck.Clear();
+        deck.Add(Instantiate(entrancesAndExits));
+        deck.AddRange(tmpList);
+        deck.Add(Instantiate(entrancesAndExits));
     }
 }
 
