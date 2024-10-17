@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -11,6 +10,11 @@ public class PlayerController : MonoBehaviour
     Vector3 targetPosition;
     Vector3 targetRotation;
 
+    bool canMoveForward;
+    bool canMoveBackward;
+    RaycastHit forwardHit;
+    RaycastHit backwardHit;
+
     bool IsMoving
     {
         get
@@ -20,42 +24,31 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void RotateLeft() { if (!IsMoving) targetRotation -= Vector3.up * 90f; }
-    public void RotateRight() { if (!IsMoving) targetRotation += Vector3.up * 90f; }
-    public void MoveForward()
-    {
-        Vector3 fwd = transform.TransformDirection(Vector3.forward) * collisionDetectionDistance;
-
-        if (!Physics.Raycast(transform.position, fwd, out RaycastHit hitinfo, collisionDetectionDistance))
-        {
-            Debug.Log("Nothing in front of you");
-            if (!IsMoving)
-            {
-                Debug.Log("IsMoving: " + IsMoving);
-                targetPosition += transform.forward;
-                turns++;
-            }
-        }
-    }
-
-    public void MoveBackward()
-    {
-        Vector3 bwd = transform.TransformDirection(Vector3.back) * collisionDetectionDistance;
-
-        if (!Physics.Raycast(transform.position, bwd, collisionDetectionDistance))
-        {
-            if (!IsMoving)
-            {
-                targetPosition -= transform.forward;
-                turns++;
-            }
-        }
-    }
-
-    
     void Start()
     {
         targetPosition = transform.position;
+    }
+
+    void Update()
+    {
+        Vector3 fwd = transform.TransformDirection(Vector3.forward) * collisionDetectionDistance;
+        Vector3 bwd = transform.TransformDirection(Vector3.back) * collisionDetectionDistance;
+        Vector3 origin = new Vector3(transform.position.x, 0.5f, transform.position.z);
+        Debug.DrawRay(origin, fwd, Color.green);
+        Debug.DrawRay(origin, bwd, Color.green);
+        canMoveForward = !Physics.Raycast(origin, fwd, out forwardHit, collisionDetectionDistance);
+        canMoveBackward = !Physics.Raycast(origin, bwd, out backwardHit, collisionDetectionDistance);
+
+        if(forwardHit.transform != null)
+            Debug.Log("forwardHit: " + forwardHit.transform.gameObject.name);
+
+        if (backwardHit.transform != null)
+            Debug.Log("backwardHit: " + backwardHit.transform.gameObject.name);
+
+        if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.UpArrow)) MoveForward();
+        if (Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow)) MoveBackward();
+        if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.LeftArrow)) RotateLeft();
+        if (Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.RightArrow)) RotateRight();
     }
 
     private void FixedUpdate()
@@ -74,14 +67,22 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(targetRotation), Time.deltaTime * rotateSpeed);
     }
 
-    void Update()
+    public void RotateLeft() { if (!IsMoving) targetRotation -= Vector3.up * 90f; }
+    public void RotateRight() { if (!IsMoving) targetRotation += Vector3.up * 90f; }
+    public void MoveForward()
     {
-        Vector3 forward = transform.TransformDirection(Vector3.forward) * collisionDetectionDistance;
-        Debug.DrawRay(transform.position, forward, Color.green);
-
-        if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.UpArrow)) MoveForward();
-        if (Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow)) MoveBackward();
-        if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.LeftArrow)) RotateLeft();
-        if (Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.RightArrow)) RotateRight();
+        if (!IsMoving && canMoveForward)
+        {
+            targetPosition += transform.forward;
+            turns++;
+        }
+    }
+    public void MoveBackward()
+    {
+        if (!IsMoving && canMoveBackward)
+        {
+            targetPosition -= transform.forward;
+            turns++;
+        }
     }
 }
