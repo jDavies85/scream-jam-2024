@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class MapGenerator : MonoBehaviour
 {
@@ -21,10 +22,18 @@ public class MapGenerator : MonoBehaviour
             }
             deck.Shuffle();
             var coords = new Vector3();
-            foreach (var item in deck)
+            int rowCount = 4;
+            for (int i = 0; i < deck.Count; i++)
             {
-                item.transform.position = coords;
+                deck[i].transform.position = coords;
                 coords.x += 3;
+                rowCount--;
+                if(rowCount == 0)
+                {
+                    coords.x = 0;
+                    coords.z += 3;
+                    rowCount = 4;
+                }
             }
         }
     }
