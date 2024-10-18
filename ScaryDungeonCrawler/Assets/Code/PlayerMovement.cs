@@ -39,11 +39,11 @@ public class PlayerController : MonoBehaviour
         canMoveForward = !Physics.Raycast(origin, fwd, out forwardHit, collisionDetectionDistance);
         canMoveBackward = !Physics.Raycast(origin, bwd, out backwardHit, collisionDetectionDistance);
 
-        if(forwardHit.transform != null)
-            Debug.Log("forwardHit: " + forwardHit.transform.gameObject.name);
+        //if(forwardHit.transform != null)
+        //    Debug.Log("forwardHit: " + forwardHit.transform.gameObject.name);
 
-        if (backwardHit.transform != null)
-            Debug.Log("backwardHit: " + backwardHit.transform.gameObject.name);
+        //if (backwardHit.transform != null)
+        //    Debug.Log("backwardHit: " + backwardHit.transform.gameObject.name);
 
         if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.UpArrow)) MoveForward();
         if (Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.DownArrow)) MoveBackward();

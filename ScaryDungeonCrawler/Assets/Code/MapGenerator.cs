@@ -18,9 +18,9 @@ public class MapGenerator : MonoBehaviour
         {
             GenerateDeck();
             lastRoom = deck[0].GetComponent<Room>();
-            //foreach (var tile in deck)
+            //for (int i = 1; i < deck.Count; i++)
             //{
-                
+            //    PlaceTile();
             //}
             //var coords = new Vector3();
             //int rowCount = 4;
@@ -55,27 +55,33 @@ public class MapGenerator : MonoBehaviour
             {
                 //get valid spawn point
                 var validSpawners = lastRoom.roomSpawners.Where(x => !x.isOccupied).ToList();
+
                 if (!validSpawners.Any())
-                {
                     Debug.Log("There are no valid placements for this tile, find another origin tile.");
-                }
-                var spawner = validSpawners[Random.Range(0, validSpawners.Count)];
-                tile.transform.position = spawner.spawnpoint.transform.position;
+                
+                int rand = Random.Range(0, validSpawners.Count);
+                Debug.Log("Choosing element " + rand + " of " + validSpawners.Count);
+                var spawner = validSpawners[rand];
+                tile.transform.position = spawner.gameObject.transform.position;
+
                 //rotate next room until it fits AND when placed at least one spawn is valid
-                spawner.isOccupied = true;
-                //this is gross
-                var allTheSpawners = placedTiles.SelectMany(x => x.GetComponent<Room>().roomSpawners).ToList();
-                Debug.Log("Checking " + allTheSpawners.Count + " spawners for collision");
-                foreach (var sp in allTheSpawners)
-                {
-                    Collider[] hitColliders = Physics.OverlapSphere(sp.spawnpoint.transform.position, 0.1f);
-                    Debug.Log("Found " + hitColliders.Count() + " colliders");
-                    foreach (var hitCollider in hitColliders)
-                    {
-                        Debug.Log("Hit " + hitCollider.gameObject.name);
-                        sp.isOccupied = true;
-                    }
-                }
+                //spawner.isOccupied = true;
+                ////this is gross
+                //var allTheSpawners = placedTiles.SelectMany(x => x.GetComponent<Room>().roomSpawners).ToList();
+                //Debug.Log("Checking " + allTheSpawners.Count + " spawners for collision");
+                //foreach (var sp in allTheSpawners)
+                //{
+                //    Collider[] hitColliders = Physics.OverlapSphere(sp.gameObject.transform.position, 0.1f);
+                    
+                //    if(hitColliders.Any())
+                //        Debug.Log("Found " + hitColliders.Count() + " colliders");
+                    
+                //    foreach (var hitCollider in hitColliders)
+                //    {
+                //        Debug.Log("Hit " + hitCollider.gameObject.name);
+                //        sp.isOccupied = true;
+                //    }
+                //}
             }
             lastRoom = currentRoom;
             deckIndex++;
