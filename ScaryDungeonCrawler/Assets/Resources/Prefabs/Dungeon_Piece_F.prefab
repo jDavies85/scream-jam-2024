@@ -805,7 +805,11 @@ MonoBehaviour:
   - {fileID: 1728254397654854226}
   - {fileID: 4315970119673155090}
   - {fileID: 4471591917822046391}
-  spawnpoints: []
+  spawnpoints:
+  - {fileID: 3337697069661881056}
+  - {fileID: 1994198332626590418}
+  - {fileID: 72869144105725239}
+  - {fileID: 1555698962236726943}
   neighbours: []
 --- !u!1 &1728254397654854226
 GameObject:

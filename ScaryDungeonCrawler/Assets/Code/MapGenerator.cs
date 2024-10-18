@@ -9,25 +9,19 @@ public class MapGenerator : MonoBehaviour
     public GameObject entrancesAndExits;
     public bool generateRandomMap;
     private List<GameObject> deck = new List<GameObject>();
-
+    private List<GameObject> placedTiles = new List<GameObject>();
+    private Room lastRoom = null;
+    private int deckIndex = 1;
     void Awake()
     {
         if(generateRandomMap)
         {
             GenerateDeck();
-            var roomCount = 0;
-            var coords = new Vector3();
-            foreach (var item in deck)
-            {
-                var room = item.GetComponent<Room>();
-                if(roomCount > 0)
-                {
-                    //get valid spawn point
-                    //rotate next room until it fits AND when placed all spawns are valid
-                    //place room
-                }
-                item.transform.position = coords;
-            }
+            lastRoom = deck[0].GetComponent<Room>();
+            //foreach (var tile in deck)
+            //{
+                
+            //}
             //var coords = new Vector3();
             //int rowCount = 4;
             //for (int i = 0; i < deck.Count; i++)
@@ -45,9 +39,52 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
+    bool IsValidPlacement()
+    {
+        return true;
+    }
+
+    public void PlaceTile()
+    {
+        if(deckIndex < deck.Count)
+        {
+            var tile = deck[deckIndex];
+            placedTiles.Add(tile);
+            var currentRoom = tile.GetComponent<Room>();
+            if (lastRoom != null)
+            {
+                //get valid spawn point
+                var validSpawners = lastRoom.roomSpawners.Where(x => !x.isOccupied).ToList();
+                if (!validSpawners.Any())
+                {
+                    Debug.Log("There are no valid placements for this tile, find another origin tile.");
+                }
+                var spawner = validSpawners[Random.Range(0, validSpawners.Count)];
+                tile.transform.position = spawner.spawnpoint.transform.position;
+                //rotate next room until it fits AND when placed at least one spawn is valid
+                spawner.isOccupied = true;
+                //this is gross
+                var allTheSpawners = placedTiles.SelectMany(x => x.GetComponent<Room>().roomSpawners).ToList();
+                Debug.Log("Checking " + allTheSpawners.Count + " spawners for collision");
+                foreach (var sp in allTheSpawners)
+                {
+                    Collider[] hitColliders = Physics.OverlapSphere(sp.spawnpoint.transform.position, 0.1f);
+                    Debug.Log("Found " + hitColliders.Count() + " colliders");
+                    foreach (var hitCollider in hitColliders)
+                    {
+                        Debug.Log("Hit " + hitCollider.gameObject.name);
+                        sp.isOccupied = true;
+                    }
+                }
+            }
+            lastRoom = currentRoom;
+            deckIndex++;
+        }
+    }
+
     void GenerateDeck() 
     {
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 5; i++)
         {
             for (int j = 0; j < tiles[i].count; j++)
             {
