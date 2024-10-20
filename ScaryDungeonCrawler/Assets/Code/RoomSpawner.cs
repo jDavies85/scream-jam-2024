@@ -16,9 +16,9 @@ public class RoomSpawner : MonoBehaviour
             isOccupied = true;
     }
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.name.Contains("Floor"))
-            isOccupied = false;
-    }
+    //private void OnTriggerExit(Collider other)
+    //{
+    //    if (other.gameObject.name.Contains("Floor"))
+    //        isOccupied = false;
+    //}
 }

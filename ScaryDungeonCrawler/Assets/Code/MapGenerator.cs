@@ -1,7 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class MapGenerator : MonoBehaviour
 {
@@ -18,30 +19,43 @@ public class MapGenerator : MonoBehaviour
         {
             GenerateDeck();
             lastRoom = deck[0].GetComponent<Room>();
+            lastRoom.gameObject.SetActive(true);
+            var coroutine = WaitAndPlace(.05f);
+            StartCoroutine(coroutine);
+
             //for (int i = 1; i < deck.Count; i++)
             //{
             //    PlaceTile();
             //}
-            //var coords = new Vector3();
-            //int rowCount = 4;
-            //for (int i = 0; i < deck.Count; i++)
-            //{
-            //    deck[i].transform.position = coords;
-            //    coords.x += 3;
-            //    rowCount--;
-            //    if(rowCount == 0)
-            //    {
-            //        coords.x = 0;
-            //        coords.z += 3;
-            //        rowCount = 4;
-            //    }
-            //}
         }
     }
 
-    bool IsValidPlacement()
+    private IEnumerator WaitAndPlace(float waitTime)
     {
-        return true;
+        for (int i = 1; i < deck.Count; i++)
+        {
+            PlaceTile();
+            yield return new WaitForSeconds(waitTime);
+        }
+    }
+
+    public void GenerateDungeon()
+    {
+        var entrance = deck.First();
+        var exit = deck.Last();
+        var tmpList = deck.GetRange(1, deck.Count - 2).ToList();
+        deck.Clear();
+        deck.Add(entrance);
+        deck.AddRange(tmpList);
+        deck.Add(exit); 
+        placedTiles.Clear();
+        lastRoom = null;
+        deckIndex = 1;
+        lastRoom = deck[0].GetComponent<Room>();
+        for (int i = 1; i < deck.Count; i++)
+        {
+            PlaceTile();
+        }
     }
 
     public void PlaceTile()
@@ -51,41 +65,65 @@ public class MapGenerator : MonoBehaviour
             var tile = deck[deckIndex];
             placedTiles.Add(tile);
             var currentRoom = tile.GetComponent<Room>();
-            if (lastRoom != null)
-            {
-                //get valid spawn point
-                var validSpawners = lastRoom.roomSpawners.Where(x => !x.isOccupied).ToList();
-
-                if (!validSpawners.Any())
-                    Debug.Log("There are no valid placements for this tile, find another origin tile.");
-                
-                int rand = Random.Range(0, validSpawners.Count);
-                Debug.Log("Choosing element " + rand + " of " + validSpawners.Count);
-                var spawner = validSpawners[rand];
-                tile.transform.position = spawner.gameObject.transform.position;
-
-                //rotate next room until it fits AND when placed at least one spawn is valid
-                //spawner.isOccupied = true;
-                ////this is gross
-                //var allTheSpawners = placedTiles.SelectMany(x => x.GetComponent<Room>().roomSpawners).ToList();
-                //Debug.Log("Checking " + allTheSpawners.Count + " spawners for collision");
-                //foreach (var sp in allTheSpawners)
-                //{
-                //    Collider[] hitColliders = Physics.OverlapSphere(sp.gameObject.transform.position, 0.1f);
-                    
-                //    if(hitColliders.Any())
-                //        Debug.Log("Found " + hitColliders.Count() + " colliders");
-                    
-                //    foreach (var hitCollider in hitColliders)
-                //    {
-                //        Debug.Log("Hit " + hitCollider.gameObject.name);
-                //        sp.isOccupied = true;
-                //    }
-                //}
-            }
+            
+            TryPlaceTile(tile);
+            
             lastRoom = currentRoom;
             deckIndex++;
         }
+    }
+
+    private void TryPlaceTile(GameObject tile, int count = 0)
+    {
+        if (count == 15)
+            throw new System.InvalidOperationException("Too much recursion");
+
+        var currentRoom = tile.GetComponent<Room>();
+
+        var validSpawners = lastRoom.roomSpawners.Where(x => !x.isOccupied).ToList();
+
+        if (!validSpawners.Any() || count == 10)
+        {
+            validSpawners = FindNewTile(count);
+        }
+
+        int rand = Random.Range(0, validSpawners.Count);
+        var spawner = validSpawners[rand];
+        
+        tile.transform.position = spawner.gameObject.transform.position;
+        tile.SetActive(true);
+        foreach (var item in currentRoom.roomSpawners)
+        {
+            item.isOccupied = false;
+        }
+        var isValidPlacement = false;
+        //rotate up to 4 times
+        for (int i = 0; i < 4; i++)
+        {
+            isValidPlacement = currentRoom.IsValidPlacement(i);
+            if (!isValidPlacement)
+                currentRoom.RotateRoom();
+            else
+                break;
+        }
+        //if still not valid room, need to find a new current room
+        if (!isValidPlacement)
+        {
+            count++;
+            TryPlaceTile(tile, count);
+        }
+    }
+
+    public List<RoomSpawner> FindNewTile(int index = 0)
+    {
+        Debug.Log("There are no valid placements for this tile, find another origin tile.");
+        var rooms = placedTiles.Select(x => x.GetComponent<Room>()).Where(x => x.roomSpawners.Any(x => !x.isOccupied)).ToList();
+        if (index >= rooms.Count)
+            throw new System.InvalidOperationException("Tried all the rooms");
+        lastRoom = rooms[index];
+        if (lastRoom == null)
+            Debug.Log("Things are really bad!");
+        return lastRoom.roomSpawners.Where(x => !x.isOccupied).ToList();
     }
 
     void GenerateDeck() 
@@ -103,6 +141,14 @@ public class MapGenerator : MonoBehaviour
         deck.Add(Instantiate(entrancesAndExits));
         deck.AddRange(tmpList);
         deck.Add(Instantiate(entrancesAndExits));
+        foreach(var tile in deck)
+        {
+            tile.SetActive(false);
+            foreach (var item in tile.GetComponent<Room>().roomSpawners)
+            {
+                item.isOccupied = false;
+            }
+        }
     }
 }
 

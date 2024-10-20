@@ -191,7 +191,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Next Tile
+  m_text: Generate
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -268,6 +268,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 875517066}
   m_CullTransparentMesh: 1
+--- !u!1001 &1486461759
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3753061419567266417, guid: 53920bd721cf7f44b9c53e24d2a9ab7a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -12.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3753061419567266417, guid: 53920bd721cf7f44b9c53e24d2a9ab7a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3753061419567266417, guid: 53920bd721cf7f44b9c53e24d2a9ab7a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -13.86
+      objectReference: {fileID: 0}
+    - target: {fileID: 3753061419567266417, guid: 53920bd721cf7f44b9c53e24d2a9ab7a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3753061419567266417, guid: 53920bd721cf7f44b9c53e24d2a9ab7a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3753061419567266417, guid: 53920bd721cf7f44b9c53e24d2a9ab7a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3753061419567266417, guid: 53920bd721cf7f44b9c53e24d2a9ab7a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3753061419567266417, guid: 53920bd721cf7f44b9c53e24d2a9ab7a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3753061419567266417, guid: 53920bd721cf7f44b9c53e24d2a9ab7a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3753061419567266417, guid: 53920bd721cf7f44b9c53e24d2a9ab7a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4777314403439207309, guid: 53920bd721cf7f44b9c53e24d2a9ab7a, type: 3}
+      propertyPath: m_Name
+      value: Dungeon_Piece_A
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 53920bd721cf7f44b9c53e24d2a9ab7a, type: 3}
 --- !u!1 &1635924978
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,7 +580,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 510274888}
         m_TargetAssemblyTypeName: MapGenerator, Assembly-CSharp
-        m_MethodName: PlaceTile
+        m_MethodName: GenerateDungeon
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -579,6 +636,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1943061877011713899, guid: 5295c2c8544e2c5438c1740939aefe1d, type: 3}
+      propertyPath: generateRandomMap
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5344990038323340198, guid: 5295c2c8544e2c5438c1740939aefe1d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -709,3 +770,4 @@ SceneRoots:
   - {fileID: 2610998440661326889}
   - {fileID: 1635924982}
   - {fileID: 1749961387}
+  - {fileID: 1486461759}
